@@ -1,21 +1,31 @@
+// Specifies the version of the Protocol Buffer language (proto3 is the modern standard)
 syntax = "proto3";
 
-// split our request and response file all into different file
+// If true, the compiler generates a separate .java file for every message type (easier to read/import)
 option java_multiple_files = true;
 
-// ensure code generation hit all the code in the billing directory
+// Defines the Java package where the generated classes will be placed (e.g., in src/main/java/billing/...)
 option java_package = "billing";
 
+// Defines the Service (the API). This acts like a Java Interface.
 service BillingService {
+  // Defines a function call.
+  // RPC name: CreateBillingAccount
+  // Input: BillingRequest object
+  // Output: BillingResponse object
   rpc CreateBillingAccount (BillingRequest) returns (BillingResponse);
 }
 
+// Defines the data structure for the Request
 message BillingRequest {
+  // 'string' is the data type.
+  // '= 1' is NOT a value. It is a unique "Field Tag" used to identify the field in binary format.
   string patientId = 1;
   string name = 2;
   string email = 3;
 }
 
+// Defines the data structure for the Response
 message BillingResponse {
   string accountId = 1;
   string status = 2;
