@@ -1,6 +1,18 @@
 server:
   port: 4004 # Gateway listens on port 4004
 
+springdoc:
+  swagger-ui:
+    enabled: true
+    # This creates the "Select a definition" dropdown in the UI
+    urls:
+      - name: Auth Service
+        url: /api-docs/auth
+      - name: Patient Service
+        url: /api-docs/patients
+  api-docs:
+    enabled: true
+
 # --- ADD THIS SECTION AT THE TOP LEVEL ---
 logging:
   level:
@@ -16,14 +28,32 @@ spring:
       server:
         webflux:
           routes:
+            # Route for http://localhost:4004/auth/**
+            - id: auth-service-route
+              uri: http://auth-service:4005
+              predicates:
+                - Path=/auth/**
+              filters:
+                - StripPrefix=1
+
+            # Route for /api/docs/auth to patient-service /v3/api-docs
+            - id: api-docs-auth-route
+              uri: http://auth-service:4005
+              predicates:
+                - Path=/api-docs/auth
+              filters:
+                - RewritePath=/api-docs/auth,/v3/api-docs
+
             # Route for /api/patients/** to patient-service
             - id: patient-service-route
               uri: http://patient-service:4000
               predicates:
                 # Matches both /api/patients AND /api/patients/anything
-                - Path=/api/patients, /api/patients/**
+                - Path=/api/patients/**
               filters:
                 - StripPrefix=1
+                # The following will look for JwtValidation ending with "GatewayFilterFactory"
+                - JwtValidation
 
             # Route for /api/docs/patients to patient-service /v3/api-docs
             - id: api-docs-patient-route
