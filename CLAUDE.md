@@ -65,6 +65,31 @@ Each service has its own copy of the relevant `.proto` files under `src/main/pro
 - **DTO mapping**: patient-service uses `PatientMapper` to convert between `Patient` entity and `PatientRequestDTO`/`PatientResponseDTO`.
 - **gRPC code generation**: `billing-service` and `patient-service` use `protobuf-maven-plugin`; generated code appears in `target/generated-sources/protobuf/`.
 
+## Frontend
+
+React 19 + Vite + Tailwind CSS app located in `frontend/`.
+
+```bash
+# Install dependencies
+cd frontend && npm install
+
+# Run dev server (default port 5173)
+cd frontend && npm run dev
+
+# Build for production
+cd frontend && npm run build
+```
+
+**Key libraries:** `axios`, `react-router-dom`, `react-hook-form`, `react-hot-toast`, `lucide-react`
+
+**Structure:**
+- `src/api/` — Axios instance + auth/patient API calls (proxied to API Gateway at port 4004)
+- `src/context/AuthContext.jsx` — JWT auth state, login/logout
+- `src/pages/` — `LoginPage`, `DashboardPage`
+- `src/components/` — `Navbar`, `PatientTable`, `PatientFormModal`, `DeleteConfirmModal`, `StatsCard`, `ProtectedRoute`, `LoadingSpinner`
+
+The frontend talks exclusively to the API Gateway (`http://localhost:4004`). All `/api/patients/**` requests require a valid JWT (stored in `localStorage`).
+
 ## Testing HTTP Endpoints
 
 Pre-written `.http` request files are in:
